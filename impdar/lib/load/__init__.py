@@ -12,6 +12,7 @@ A wrapper around the other loading utilities
 
 import os.path
 import glob
+import numpy as np
 from . import load_mcords  # needs to be imported first and alone due to opaque h5py/netcdf4 error
 from . import load_gssi, load_pulse_ekko, load_gprMax, load_olaf, load_segy, load_UoA
 from . import load_delores, load_osu, load_stomat, load_ramac, load_bsi, load_tek, load_apres_profile
@@ -126,6 +127,7 @@ def load(filetype, fns_in, channel=1, t_srs=None, s_srs=None, *args, **kwargs):
                     dat += load_UoA.load_UoA_h5(fn, gps_offset=gps_offset)
         else:
             raise ImportError('You need h5py for UoA')
+        dat = [d for d in dat if np.all(np.array(d.data.shape) > 0)]
     elif filetype == 'delores':
         dat = [load_delores.load_delores(fn, channel=channel) for fn in fns_in]
     elif filetype == 'osu':
